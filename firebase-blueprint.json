@@ -1,0 +1,105 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Anonymous installation identity and app lock security state",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "anonymous_installation_id": { "type": "string" },
+        "app_password_hash": { "type": "string" },
+        "app_password_salt": { "type": "string" },
+        "app_password_version": { "type": "string" },
+        "app_lock_enabled": { "type": "boolean" },
+        "app_lock_timeout": { "type": "string" },
+        "app_failed_attempts": { "type": "number" },
+        "app_locked_until": { "type": "number" },
+        "created_at": { "type": "string" },
+        "updated_at": { "type": "string" }
+      },
+      "required": ["id", "anonymous_installation_id", "created_at", "updated_at"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Ledger Flow business task with cryptographic protection and payment tracking metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "task_name": { "type": "string" },
+        "is_password_protected": { "type": "boolean" },
+        "password_hash": { "type": "string" },
+        "password_salt": { "type": "string" },
+        "password_version": { "type": "string" },
+        "created_at": { "type": "string" },
+        "updated_at": { "type": "string" },
+        "last_opened_at": { "type": "string" },
+        "total_records": { "type": "number" },
+        "total_amount": { "type": "number" },
+        "total_paid": { "type": "number" },
+        "total_remaining": { "type": "number" },
+        "paid_count": { "type": "number" },
+        "partial_count": { "type": "number" },
+        "unpaid_count": { "type": "number" },
+        "anonymous_installation_id": { "type": "string" }
+      },
+      "required": ["id", "task_name", "created_at", "updated_at", "anonymous_installation_id"]
+    },
+    "Record": {
+      "title": "Record",
+      "description": "Spreadsheet business transaction record with payment tracking fields",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customer_name": { "type": "string" },
+        "item": { "type": "string" },
+        "quantity": { "type": "number" },
+        "price": { "type": "number" },
+        "total": { "type": "number" },
+        "paid_amount": { "type": "number" },
+        "remaining_amount": { "type": "number" },
+        "payment_status": { "type": "string" },
+        "date": { "type": "string" },
+        "created_at": { "type": "string" },
+        "updated_at": { "type": "string" },
+        "order_index": { "type": "number" },
+        "anonymous_installation_id": { "type": "string" }
+      },
+      "required": ["id", "customer_name", "item", "quantity", "price", "total", "paid_amount", "remaining_amount", "payment_status", "date", "created_at", "updated_at", "anonymous_installation_id"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "Personal and business notes with rich content, pin, archive and trash states",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "is_pinned": { "type": "boolean" },
+        "is_archived": { "type": "boolean" },
+        "is_deleted": { "type": "boolean" },
+        "created_at": { "type": "string" },
+        "updated_at": { "type": "string" },
+        "anonymous_installation_id": { "type": "string" }
+      },
+      "required": ["id", "title", "content", "is_pinned", "is_archived", "is_deleted", "created_at", "updated_at", "anonymous_installation_id"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Anonymous device installation and app lock security profile"
+    },
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Business tasks belonging to the anonymous installation"
+    },
+    "/users/{userId}/tasks/{taskId}/records/{recordId}": {
+      "schema": "Record",
+      "description": "Individual transaction records with payment details for a business task"
+    },
+    "/users/{userId}/notes/{noteId}": {
+      "schema": "Note",
+      "description": "Personal and business notes stored under the anonymous installation scope"
+    }
+  }
+}

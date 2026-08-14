@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" fill="none">
+  <defs>
+    <linearGradient id="barOrange" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#E65100" />
+      <stop offset="100%" stop-color="#FFA000" />
+    </linearGradient>
+    <linearGradient id="barAmber" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#F57C00" />
+      <stop offset="100%" stop-color="#FFB300" />
+    </linearGradient>
+    <linearGradient id="barYellow" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FB8C00" />
+      <stop offset="100%" stop-color="#FFD54F" />
+    </linearGradient>
+    <linearGradient id="barCyan" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#0277BD" />
+      <stop offset="100%" stop-color="#00E5FF" />
+    </linearGradient>
+    <linearGradient id="barBlue" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#01579B" />
+      <stop offset="100%" stop-color="#00B0FF" />
+    </linearGradient>
+    <linearGradient id="arrowGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E0F7FA" />
+      <stop offset="40%" stop-color="#00E5FF" />
+      <stop offset="100%" stop-color="#0091EA" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="80" rx="16" fill="#0A0A0A" />
+  <rect x="30" y="10" width="4.5" height="4.5" rx="0.5" fill="#FFB300" />
+  <rect x="36" y="6" width="4.5" height="4.5" rx="0.5" fill="#FFA000" />
+  <rect x="38" y="13" width="4" height="4" rx="0.5" fill="#FF8F00" />
+  <path d="M12 48 L18 45 L18 64 L12 66 Z" fill="url(#barOrange)" />
+  <path d="M20 38 L27 34 L27 68 L20 66 Z" fill="url(#barAmber)" />
+  <path d="M29 28 L36 24 L36 71 L29 69 Z" fill="url(#barYellow)" />
+  <path d="M48 20 L55 18 L55 76 L48 74 Z" fill="url(#barCyan)" />
+  <path d="M57 26 L64 29 L64 77 L57 76 Z" fill="url(#barBlue)" />
+  <path d="M6 68 C 12 76, 28 80, 52 72 C 60 69, 70 58, 80 20 L 71 21 L 86 12 L 86 28 L 78 25 C 68 62, 54 75, 26 75 C 14 75, 8 71, 6 68 Z" fill="url(#arrowGrad)" />
+  <path d="M8 65 C 16 57, 30 50, 48 40 L 49 44 C 32 53, 19 61, 9 68 Z" fill="#FFFFFF" opacity="0.85" />
+  <g transform="translate(18, 28) scale(0.65)" fill="#FFFFFF">
+    <path d="M6 4 L22 4 L22 7 L15 7 C 18 8.5 19.5 11 19.5 14 L22 14 L22 17 L19 17 C 18 21.5 14.5 24 9 24.5 L20 38 L14 38 L4 25 L4 22 C 10 22 14 20.5 14 17 L4 17 L4 14 L14 14 C 14 11 11 9 6 9 L4 9 L4 4 L6 4 Z" />
+  </g>
+</svg>
