@@ -15,7 +15,8 @@ import {
   TaskRecord,
   AppLockStatus,
   AppLockTimeout,
-  calculatePaymentStatus,
+  PaymentStatus,
+  normalizePaymentStatus,
   calculateRemainingAmount,
   Note,
 } from '../types';
@@ -392,7 +393,6 @@ export const firestoreService = {
       total_paid: 0,
       total_remaining: 0,
       paid_count: 0,
-      partial_count: 0,
       unpaid_count: 0,
       created_at: now,
       updated_at: now,
@@ -447,7 +447,6 @@ export const firestoreService = {
     const totalPaid = records.reduce((sum, r) => sum + (r.paid_amount || 0), 0);
     const totalRemaining = records.reduce((sum, r) => sum + (r.remaining_amount || 0), 0);
     const paidCount = records.filter((r) => r.payment_status === 'PAID').length;
-    const partialCount = records.filter((r) => r.payment_status === 'PARTIAL').length;
     const unpaidCount = records.filter((r) => r.payment_status === 'UNPAID').length;
 
     const taskSummary: TaskSummary = {
@@ -458,7 +457,6 @@ export const firestoreService = {
       total_paid: totalPaid,
       total_remaining: totalRemaining,
       paid_count: paidCount,
-      partial_count: partialCount,
       unpaid_count: unpaidCount,
       created_at: t.created_at,
       updated_at: now,
@@ -490,8 +488,8 @@ export const firestoreService = {
         typeof data.remaining_amount === 'number'
           ? data.remaining_amount
           : calculateRemainingAmount(total, paidAmount);
-      const paymentStatus =
-        data.payment_status || calculatePaymentStatus(total, paidAmount);
+      // Strictly load user-saved payment_status without auto-deriving from amounts
+      const paymentStatus: PaymentStatus = normalizePaymentStatus(data.payment_status);
 
       return {
         id: data.id || d.id,
@@ -554,7 +552,6 @@ export const firestoreService = {
     let totalPaid = 0;
     let totalRemaining = 0;
     let paidCount = 0;
-    let partialCount = 0;
     let unpaidCount = 0;
 
     const cleanRecords: TaskRecord[] = [];
@@ -567,15 +564,18 @@ export const firestoreService = {
       const total = qty * price;
       const paid = Number(r.paid_amount) || 0;
       const remaining = calculateRemainingAmount(total, paid);
-      const status = calculatePaymentStatus(total, paid);
+      // USER-CONTROLLED FIELD: Strictly preserve the manually chosen status
+      const status: PaymentStatus = normalizePaymentStatus(r.payment_status);
 
       grandTotal += total;
       totalPaid += paid;
       totalRemaining += remaining;
 
-      if (status === 'PAID') paidCount++;
-      else if (status === 'PARTIAL') partialCount++;
-      else unpaidCount++;
+      if (status === 'PAID') {
+        paidCount++;
+      } else {
+        unpaidCount++;
+      }
 
       const recordDocData: TaskRecord = {
         id: recordId,
@@ -608,7 +608,6 @@ export const firestoreService = {
       total_paid: totalPaid,
       total_remaining: totalRemaining,
       paid_count: paidCount,
-      partial_count: partialCount,
       unpaid_count: unpaidCount,
       updated_at: now,
     });
@@ -623,7 +622,6 @@ export const firestoreService = {
       total_paid: totalPaid,
       total_remaining: totalRemaining,
       paid_count: paidCount,
-      partial_count: partialCount,
       unpaid_count: unpaidCount,
       created_at: t.created_at,
       updated_at: now,
@@ -668,7 +666,6 @@ export const firestoreService = {
       total_paid: t.total_paid ?? 0,
       total_remaining: t.total_remaining ?? 0,
       paid_count: t.paid_count ?? 0,
-      partial_count: t.partial_count ?? 0,
       unpaid_count: t.unpaid_count ?? 0,
       created_at: t.created_at,
       updated_at: now,
@@ -975,7 +972,6 @@ export const firestoreService = {
       let totalPaid = 0;
       let totalRemaining = 0;
       let paidCount = 0;
-      let partialCount = 0;
       let unpaidCount = 0;
 
       if (Array.isArray(taskRecords) && taskRecords.length > 0) {
@@ -988,14 +984,13 @@ export const firestoreService = {
           const total = typeof r.total === 'number' ? r.total : qty * price;
           const paid = Number(r.paid_amount) || 0;
           const remaining = calculateRemainingAmount(total, paid);
-          const status = calculatePaymentStatus(total, paid);
+          const status = normalizePaymentStatus(r.payment_status);
 
           grandTotal += total;
           totalPaid += paid;
           totalRemaining += remaining;
 
           if (status === 'PAID') paidCount++;
-          else if (status === 'PARTIAL') partialCount++;
           else unpaidCount++;
 
           const recRef = doc(db, 'users', installationId, 'tasks', taskId, 'records', recId);
@@ -1032,7 +1027,6 @@ export const firestoreService = {
         total_paid: totalPaid,
         total_remaining: totalRemaining,
         paid_count: paidCount,
-        partial_count: partialCount,
         unpaid_count: unpaidCount,
         created_at: t.created_at || now,
         updated_at: now,

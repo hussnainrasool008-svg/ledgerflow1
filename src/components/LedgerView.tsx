@@ -13,8 +13,8 @@ import {
   Copy,
   Trash2,
   CheckCircle2,
-  Clock,
   AlertCircle,
+  Clock,
   Hash,
   Coins,
   Package,
@@ -29,6 +29,7 @@ import {
   ArrowUpRight,
   Filter,
   Check,
+  ChevronDown,
 } from 'lucide-react';
 import {
   TaskSummary,
@@ -36,7 +37,7 @@ import {
   CurrencyConfig,
   AutoSaveStatus,
   PaymentStatus,
-  calculatePaymentStatus,
+  normalizePaymentStatus,
   calculateRemainingAmount,
   CustomerKhataSummary,
 } from '../types';
@@ -70,7 +71,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
 }) => {
   const [records, setRecords] = useState<TaskRecord[]>(initialRecords);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'PARTIAL' | 'UNPAID'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'PAID' | 'UNPAID'>('ALL');
   const [activeTab, setActiveTab] = useState<'records' | 'khata'>('records');
   const [saveStatus, setSaveStatus] = useState<AutoSaveStatus>('saved');
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
@@ -127,7 +128,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
     triggerAutoSave(updated);
   };
 
-  // Change field in a row with dynamic auto-calculation
+  // Change field in a row with dynamic auto-calculation of Total and Remaining ONLY
   const handleChangeRecord = (index: number, field: keyof TaskRecord, value: any) => {
     const updated = [...records];
     const item = { ...updated[index] };
@@ -137,18 +138,21 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
       item.quantity = qty;
       item.total = Math.round(qty * item.price * 100) / 100;
       item.remaining_amount = calculateRemainingAmount(item.total, item.paid_amount);
-      item.payment_status = calculatePaymentStatus(item.total, item.paid_amount);
+      // USER-CONTROLLED: Never overwrite item.payment_status!
     } else if (field === 'price') {
       const prc = parseFloat(value) || 0;
       item.price = prc;
       item.total = Math.round(item.quantity * prc * 100) / 100;
       item.remaining_amount = calculateRemainingAmount(item.total, item.paid_amount);
-      item.payment_status = calculatePaymentStatus(item.total, item.paid_amount);
+      // USER-CONTROLLED: Never overwrite item.payment_status!
     } else if (field === 'paid_amount') {
       const paid = parseFloat(value) || 0;
       item.paid_amount = paid;
       item.remaining_amount = calculateRemainingAmount(item.total, paid);
-      item.payment_status = calculatePaymentStatus(item.total, paid);
+      // USER-CONTROLLED: Never overwrite item.payment_status!
+    } else if (field === 'payment_status') {
+      // Strictly user chosen
+      item.payment_status = normalizePaymentStatus(value);
     } else {
       (item as any)[field] = value;
     }
@@ -198,7 +202,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
     return records.filter((r) => {
       // Status filter
       if (statusFilter !== 'ALL') {
-        const itemStatus = r.payment_status || (r.paid_amount >= r.total && r.total > 0 ? 'PAID' : r.paid_amount > 0 ? 'PARTIAL' : 'UNPAID');
+        const itemStatus = r.payment_status === 'PAID' ? 'PAID' : 'UNPAID';
         if (itemStatus !== statusFilter) return false;
       }
 
@@ -222,8 +226,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
     0
   );
   const paidCount = records.filter((r) => r.payment_status === 'PAID').length;
-  const partialCount = records.filter((r) => r.payment_status === 'PARTIAL').length;
-  const unpaidCount = records.filter((r) => r.payment_status === 'UNPAID').length;
+  const unpaidCount = records.filter((r) => r.payment_status !== 'PAID').length;
 
   // Customer Khata Ledger Aggregation
   const customerKhatas = useMemo(() => {
@@ -246,9 +249,8 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
         0
       );
 
-      let status: PaymentStatus = 'UNPAID';
-      if (custPaid >= custTotal && custTotal >= 0) status = 'PAID';
-      else if (custPaid > 0) status = 'PARTIAL';
+      const custPaidCount = customerRecords.filter((r) => r.payment_status === 'PAID').length;
+      const custUnpaidCount = customerRecords.filter((r) => r.payment_status !== 'PAID').length;
 
       summaries.push({
         customer_name: customerName,
@@ -256,7 +258,8 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
         total_paid: custPaid,
         total_remaining: custRemaining,
         transaction_count: customerRecords.length,
-        status,
+        paid_count: custPaidCount,
+        unpaid_count: custUnpaidCount,
         records: customerRecords,
       });
     });
@@ -542,10 +545,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
           <p className="text-[10px] text-[#737373] uppercase tracking-wider font-semibold">
             Status Breakdown
           </p>
-          <div className="grid grid-cols-3 gap-1.5 mt-2">
+          <div className="grid grid-cols-2 gap-2 mt-2">
             <button
               onClick={() => setStatusFilter(statusFilter === 'PAID' ? 'ALL' : 'PAID')}
-              className={`p-1.5 rounded-lg border text-center transition-all ${
+              className={`p-2 rounded-lg border text-center transition-all ${
                 statusFilter === 'PAID'
                   ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300 ring-1 ring-emerald-500'
                   : 'bg-[#171717] border-[#262626] text-[#a3a3a3] hover:border-emerald-800'
@@ -556,20 +559,8 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
             </button>
 
             <button
-              onClick={() => setStatusFilter(statusFilter === 'PARTIAL' ? 'ALL' : 'PARTIAL')}
-              className={`p-1.5 rounded-lg border text-center transition-all ${
-                statusFilter === 'PARTIAL'
-                  ? 'bg-amber-950/60 border-amber-500 text-amber-300 ring-1 ring-amber-500'
-                  : 'bg-[#171717] border-[#262626] text-[#a3a3a3] hover:border-amber-800'
-              }`}
-            >
-              <span className="text-[10px] font-bold text-amber-400 block uppercase">Partial</span>
-              <span className="text-sm font-bold text-white">{partialCount}</span>
-            </button>
-
-            <button
               onClick={() => setStatusFilter(statusFilter === 'UNPAID' ? 'ALL' : 'UNPAID')}
-              className={`p-1.5 rounded-lg border text-center transition-all ${
+              className={`p-2 rounded-lg border text-center transition-all ${
                 statusFilter === 'UNPAID'
                   ? 'bg-rose-950/60 border-rose-500 text-rose-300 ring-1 ring-rose-500'
                   : 'bg-[#171717] border-[#262626] text-[#a3a3a3] hover:border-rose-800'
@@ -682,7 +673,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
               const totalVal = row.total || 0;
               const paidVal = row.paid_amount || 0;
               const remainingVal = row.remaining_amount ?? Math.max(0, totalVal - paidVal);
-              const statusVal = row.payment_status || (paidVal >= totalVal && totalVal > 0 ? 'PAID' : paidVal > 0 ? 'PARTIAL' : 'UNPAID');
+              const statusVal: PaymentStatus = row.payment_status === 'PAID' ? 'PAID' : 'UNPAID';
 
               return (
                 <div
@@ -690,20 +681,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                   className="p-4 rounded-xl bg-[#111111] border border-[#262626] shadow-sm space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs font-mono font-bold text-[#737373]">#{index + 1}</span>
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          statusVal === 'PAID'
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                            : statusVal === 'PARTIAL'
-                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                            : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-                        }`}
-                      >
-                        {statusVal}
-                      </span>
-                    </div>
+                    <span className="text-xs font-mono font-bold text-[#737373]">#{index + 1}</span>
                     <input
                       type="date"
                       value={row.date}
@@ -755,21 +733,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Payment Row Inputs */}
+                  {/* Payment Row Inputs & Status Selector */}
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <div>
-                      <div className="flex items-center justify-between">
-                        <label className="text-[10px] uppercase font-bold text-emerald-400">Paid Amount</label>
-                        {totalVal > 0 && paidVal < totalVal && (
-                          <button
-                            type="button"
-                            onClick={() => handleChangeRecord(index, 'paid_amount', totalVal)}
-                            className="text-[9px] text-emerald-400 hover:underline"
-                          >
-                            Mark Full
-                          </button>
-                        )}
-                      </div>
+                      <label className="text-[10px] uppercase font-bold text-emerald-400">Paid Amount</label>
                       <input
                         type="number"
                         value={row.paid_amount || ''}
@@ -779,34 +746,61 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] uppercase font-bold text-rose-400">Remaining</label>
-                      <div className="px-2.5 py-1.5 text-sm font-bold text-rose-400 font-mono bg-[#171717] border border-[#262626] rounded-lg">
-                        {formatCurrency(remainingVal, currency.symbol)}
+                      <label className="text-[10px] uppercase font-bold text-[#737373]">Payment Status</label>
+                      <div className="relative">
+                        <select
+                          value={statusVal}
+                          onChange={(e) => handleChangeRecord(index, 'payment_status', e.target.value as PaymentStatus)}
+                          className={`w-full appearance-none cursor-pointer text-xs font-semibold py-1.5 pl-2.5 pr-6 rounded-lg border transition-all focus:outline-none focus:ring-1 ${
+                            statusVal === 'PAID'
+                              ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300 focus:ring-emerald-500'
+                              : 'bg-rose-950/70 border-rose-500/50 text-rose-300 focus:ring-rose-500'
+                          }`}
+                        >
+                          <option value="PAID" className="bg-[#171717] text-emerald-400 font-semibold">
+                            ✓ Paid
+                          </option>
+                          <option value="UNPAID" className="bg-[#171717] text-rose-400 font-semibold">
+                            ✕ Unpaid
+                          </option>
+                        </select>
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none ${
+                            statusVal === 'PAID' ? 'text-emerald-400' : 'text-rose-400'
+                          }`}
+                        />
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-[#262626]">
+                  <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#262626]">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-[#737373] block">Total Amount</span>
+                      <span className="text-[10px] uppercase font-bold text-[#737373] block">Total</span>
                       <span className="text-sm font-bold text-white tabular-nums">
                         {formatCurrency(totalVal, currency.symbol)}
                       </span>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <button
-                        onClick={() => handleDuplicateRecord(index)}
-                        className="p-2 text-[#737373] hover:text-[#e5e5e5] rounded-lg hover:bg-[#1f1f1f]"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteRecord(index)}
-                        className="p-2 text-[#737373] hover:text-rose-400 rounded-lg hover:bg-rose-950/30"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-rose-400 block">Remaining</span>
+                      <span className="text-sm font-bold text-rose-400 tabular-nums">
+                        {formatCurrency(remainingVal, currency.symbol)}
+                      </span>
                     </div>
+                  </div>
+
+                  <div className="flex items-center justify-end space-x-1 pt-1">
+                    <button
+                      onClick={() => handleDuplicateRecord(index)}
+                      className="p-2 text-[#737373] hover:text-[#e5e5e5] rounded-lg hover:bg-[#1f1f1f]"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteRecord(index)}
+                      className="p-2 text-[#737373] hover:text-rose-400 rounded-lg hover:bg-rose-950/30"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               );
@@ -838,17 +832,17 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     </h3>
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        khata.status === 'PAID'
+                        khata.unpaid_count === 0 && khata.total_remaining === 0
                           ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                          : khata.status === 'PARTIAL'
-                          ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
                           : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                       }`}
                     >
-                      {khata.status}
+                      {khata.unpaid_count === 0 && khata.total_remaining === 0 ? 'PAID' : 'UNPAID'}
                     </span>
                   </div>
-                  <p className="text-xs text-[#737373] mt-0.5">{khata.transaction_count} transactions recorded</p>
+                  <p className="text-xs text-[#737373] mt-0.5">
+                    {khata.transaction_count} entries • {khata.paid_count} paid, {khata.unpaid_count} unpaid
+                  </p>
                 </div>
 
                 <div className="space-y-1.5 pt-2 border-t border-[#262626] text-xs">

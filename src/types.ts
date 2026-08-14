@@ -6,7 +6,6 @@ export interface TaskSummary {
   total_paid?: number;
   total_remaining?: number;
   paid_count?: number;
-  partial_count?: number;
   unpaid_count?: number;
   created_at: string;
   updated_at: string;
@@ -18,7 +17,7 @@ export interface TaskSummary {
   anonymous_installation_id?: string;
 }
 
-export type PaymentStatus = 'PAID' | 'PARTIAL' | 'UNPAID';
+export type PaymentStatus = 'PAID' | 'UNPAID';
 
 export type TaskSortOption =
   | 'updated_desc'
@@ -52,16 +51,15 @@ export interface CustomerKhataSummary {
   total_paid: number;
   total_remaining: number;
   transaction_count: number;
-  status: PaymentStatus;
+  paid_count: number;
+  unpaid_count: number;
   records: TaskRecord[];
 }
 
-export function calculatePaymentStatus(total: number, paidAmount: number): PaymentStatus {
-  const safeTotal = Math.round(Number(total || 0) * 100) / 100;
-  const safePaid = Math.round(Number(paidAmount || 0) * 100) / 100;
-  if (safePaid <= 0) return 'UNPAID';
-  if (safePaid >= safeTotal && safeTotal >= 0) return 'PAID';
-  return 'PARTIAL';
+export function normalizePaymentStatus(status?: string): PaymentStatus {
+  if (!status) return 'UNPAID';
+  const s = status.toUpperCase().trim();
+  return s === 'PAID' ? 'PAID' : 'UNPAID';
 }
 
 export function calculateRemainingAmount(total: number, paidAmount: number): number {

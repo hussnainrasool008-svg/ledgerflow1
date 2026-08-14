@@ -6,9 +6,9 @@ import {
   ArrowDown,
   ArrowUp,
   CheckCircle2,
-  Clock,
   AlertCircle,
   Check,
+  ChevronDown,
 } from 'lucide-react';
 import { TaskRecord, CurrencyConfig, PaymentStatus } from '../types';
 import { formatCurrency } from '../lib/exportUtils';
@@ -46,41 +46,6 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
     }
   };
 
-  const renderStatusBadge = (status: PaymentStatus, isZeroTotal: boolean) => {
-    if (isZeroTotal) {
-      return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-[#262626] text-[#a3a3a3] border border-[#404040]">
-          UNPAID
-        </span>
-      );
-    }
-
-    if (status === 'PAID') {
-      return (
-        <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-          <CheckCircle2 className="w-3 h-3 stroke-[2.5]" />
-          <span>Paid</span>
-        </span>
-      );
-    }
-
-    if (status === 'PARTIAL') {
-      return (
-        <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide bg-amber-500/10 text-amber-400 border border-amber-500/30">
-          <Clock className="w-3 h-3 stroke-[2.5]" />
-          <span>Partial</span>
-        </span>
-      );
-    }
-
-    return (
-      <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide bg-rose-500/10 text-rose-400 border border-rose-500/30">
-        <AlertCircle className="w-3 h-3 stroke-[2.5]" />
-        <span>Unpaid</span>
-      </span>
-    );
-  };
-
   return (
     <div className="w-full bg-[#0d0d0d] rounded-xl border border-[#262626] shadow-2xl overflow-hidden flex flex-col">
       {/* Horizontally scrollable container */}
@@ -96,7 +61,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
               <th className="py-3 px-2.5 w-32 text-right">Price ({currency.symbol})</th>
               <th className="py-3 px-3 w-36 text-right">Total ({currency.symbol})</th>
               <th className="py-3 px-3 w-36 text-right">Paid Amount ({currency.symbol})</th>
-              <th className="py-3 px-3 w-28 text-center">Payment Status</th>
+              <th className="py-3 px-3 w-36 text-center">Payment Status</th>
               <th className="py-3 px-3 w-36 text-right">Remaining ({currency.symbol})</th>
               <th className="py-3 px-2.5 w-32">Date</th>
               <th className="py-3 px-2 w-20 text-center">Actions</th>
@@ -109,7 +74,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
               const totalVal = row.total || 0;
               const paidVal = row.paid_amount || 0;
               const remainingVal = row.remaining_amount ?? Math.max(0, totalVal - paidVal);
-              const statusVal = row.payment_status || (paidVal >= totalVal && totalVal > 0 ? 'PAID' : paidVal > 0 ? 'PARTIAL' : 'UNPAID');
+              const statusVal: PaymentStatus = row.payment_status === 'PAID' ? 'PAID' : 'UNPAID';
 
               return (
                 <tr
@@ -220,31 +185,40 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                         type="number"
                         id={`paid-input-${index}`}
                         min="0"
-                        max={totalVal > 0 ? totalVal * 1.5 : undefined}
                         step="any"
                         value={row.paid_amount === 0 && totalVal === 0 ? '' : row.paid_amount}
                         onChange={(e) => onChangeRecord(index, 'paid_amount', e.target.value)}
                         placeholder="0.00"
-                        className="w-full pl-7 pr-7 py-1.5 text-xs sm:text-sm rounded-md bg-transparent hover:bg-[#171717] focus:bg-[#171717] border border-transparent focus:border-emerald-600 text-right text-emerald-400 font-mono focus:outline-none transition-all placeholder:text-[#525252]"
+                        className="w-full pl-7 pr-2 py-1.5 text-xs sm:text-sm rounded-md bg-transparent hover:bg-[#171717] focus:bg-[#171717] border border-transparent focus:border-emerald-600 text-right text-emerald-400 font-mono focus:outline-none transition-all placeholder:text-[#525252]"
                       />
-                      {/* Quick Full-Pay Button */}
-                      {totalVal > 0 && paidVal < totalVal && (
-                        <button
-                          type="button"
-                          onClick={() => onChangeRecord(index, 'paid_amount', totalVal)}
-                          title="Mark fully paid"
-                          className="absolute right-1.5 top-1/2 -translate-y-1/2 hidden group-hover/paid:flex items-center justify-center w-5 h-5 rounded bg-emerald-950/80 hover:bg-emerald-900 text-emerald-400 border border-emerald-700/50 transition-colors"
-                        >
-                          <Check className="w-3 h-3 stroke-[3]" />
-                        </button>
-                      )}
                     </div>
                   </td>
 
-                  {/* Payment Status (Auto-calculated: PAID / PARTIAL / UNPAID) */}
-                  <td className="py-1.5 px-2 text-center select-none">
-                    <div id={`status-badge-${index}`} className="flex justify-center">
-                      {renderStatusBadge(statusVal, totalVal === 0 && paidVal === 0)}
+                  {/* Payment Status (USER MANUALLY SELECTS: Paid or Unpaid) */}
+                  <td className="py-1.5 px-2 text-center">
+                    <div className="relative inline-flex items-center justify-center">
+                      <select
+                        id={`status-select-${index}`}
+                        value={statusVal}
+                        onChange={(e) => onChangeRecord(index, 'payment_status', e.target.value as PaymentStatus)}
+                        className={`appearance-none cursor-pointer text-xs font-semibold py-1.5 pl-3 pr-7 rounded-lg border transition-all focus:outline-none focus:ring-1 ${
+                          statusVal === 'PAID'
+                            ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-300 focus:ring-emerald-500 hover:bg-emerald-950'
+                            : 'bg-rose-950/70 border-rose-500/50 text-rose-300 focus:ring-rose-500 hover:bg-rose-950'
+                        }`}
+                      >
+                        <option value="PAID" className="bg-[#171717] text-emerald-400 font-semibold">
+                          ✓ Paid
+                        </option>
+                        <option value="UNPAID" className="bg-[#171717] text-rose-400 font-semibold">
+                          ✕ Unpaid
+                        </option>
+                      </select>
+                      <ChevronDown
+                        className={`w-3.5 h-3.5 absolute right-2 pointer-events-none ${
+                          statusVal === 'PAID' ? 'text-emerald-400' : 'text-rose-400'
+                        }`}
+                      />
                     </div>
                   </td>
 
