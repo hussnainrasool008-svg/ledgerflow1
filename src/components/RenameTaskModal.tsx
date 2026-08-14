@@ -61,10 +61,10 @@ export const RenameTaskModal: React.FC<RenameTaskModalProps> = ({
             </div>
             <div>
               <h2 className="text-base font-bold text-white">
-                Rename Task
+                Rename Khata
               </h2>
               <p className="text-xs text-[#737373]">
-                Update the display name of this ledger
+                Update the display name of this business khata
               </p>
             </div>
           </div>
@@ -88,7 +88,7 @@ export const RenameTaskModal: React.FC<RenameTaskModalProps> = ({
               htmlFor="rename-input"
               className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
             >
-              Task Name
+              Khata Name
             </label>
             <input
               id="rename-input"
@@ -97,6 +97,7 @@ export const RenameTaskModal: React.FC<RenameTaskModalProps> = ({
               autoFocus
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
+              placeholder="e.g. Al-Madina Hardware Khata"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] transition-colors"
             />
           </div>

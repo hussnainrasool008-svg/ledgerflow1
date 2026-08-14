@@ -45,7 +45,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           </div>
           <div>
             <h2 className="text-lg font-bold text-white">
-              Delete this task?
+              Delete this khata?
             </h2>
             <p className="text-xs text-[#737373]">
               <span className="font-semibold text-[#e5e5e5]">"{task.task_name}"</span>
@@ -60,7 +60,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
         )}
 
         <blockquote className="p-3.5 rounded-xl bg-[#171717] border border-[#262626] text-xs text-[#a3a3a3] leading-relaxed">
-          This will permanently delete this task and all of its {task.record_count} records. This action cannot be undone.
+          This will permanently delete this khata and all of its {task.record_count} entries. This action cannot be undone.
         </blockquote>
 
         <div className="pt-2 flex items-center justify-end space-x-3">
@@ -81,7 +81,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             className="px-5 py-2.5 text-xs font-semibold rounded-lg bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-950/40 transition-all disabled:opacity-50 flex items-center space-x-1.5 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
-            <span>{loading ? 'Deleting...' : 'Delete Task'}</span>
+            <span>{loading ? 'Deleting...' : 'Delete Khata'}</span>
           </button>
         </div>
       </div>

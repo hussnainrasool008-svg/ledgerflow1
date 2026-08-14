@@ -58,8 +58,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onHomeClick}
           >
             <LedgerFlowLogo variant="full" size="md" showTagline />
-            <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#171717] text-emerald-400 border border-emerald-900/40 ml-1">
-              Private
+            <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 ml-1">
+              Digital Khata
             </span>
           </div>
 
@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
-                <span>Ledgers & Tasks</span>
+                <span>My Khatas</span>
               </button>
 
               <button

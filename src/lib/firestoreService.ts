@@ -374,7 +374,6 @@ export const firestoreService = {
       total_paid: 0,
       total_remaining: 0,
       paid_count: 0,
-      partial_count: 0,
       unpaid_count: 0,
       created_at: now,
       updated_at: now,

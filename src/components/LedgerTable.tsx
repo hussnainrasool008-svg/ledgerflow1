@@ -276,14 +276,14 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
             {records.length === 0 && (
               <tr>
                 <td colSpan={11} className="py-12 text-center text-[#737373]">
-                  <p className="text-sm font-medium">No records in this task yet.</p>
+                  <p className="text-sm font-medium">No entries in this khata yet.</p>
                   <button
                     type="button"
                     onClick={onAddRow}
-                    className="mt-3 inline-flex items-center space-x-1.5 text-xs font-semibold text-emerald-400 hover:underline"
+                    className="mt-3 inline-flex items-center space-x-1.5 text-xs font-semibold text-emerald-400 hover:underline cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>Add your first row</span>
+                    <span>Add your first entry</span>
                   </button>
                 </td>
               </tr>
@@ -298,15 +298,15 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
           type="button"
           id="add-row-table-btn"
           onClick={onAddRow}
-          className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-md text-emerald-400 hover:bg-emerald-950/30 font-semibold text-xs transition-colors cursor-pointer"
+          className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-emerald-400 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-800/40 font-bold text-xs transition-colors cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>+ Add Row</span>
+          <span>+ Add Entry</span>
         </button>
 
         <div className="flex items-center space-x-4 text-[11px] text-[#737373]">
           <span>
-            Press <kbd className="px-1.5 py-0.5 rounded bg-[#171717] border border-[#262626] font-mono text-[10px] text-[#a3a3a3]">Enter</kbd> in Date to auto-add row.
+            Press <kbd className="px-1.5 py-0.5 rounded bg-[#171717] border border-[#262626] font-mono text-[10px] text-[#a3a3a3]">Enter</kbd> in Date to auto-add entry.
           </span>
           <span className="hidden sm:inline">•</span>
           <span className="hidden sm:inline text-emerald-400/80 font-medium">

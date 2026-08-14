@@ -277,13 +277,13 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
     <div id="ledger-view-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 text-[#e5e5e5]">
       {/* Top Navigation & Status Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#262626]">
-        {/* Back Button & Task Title */}
+        {/* Back Button & Khata Title */}
         <div className="flex items-center space-x-3">
           <button
             id="back-to-dashboard-btn"
             onClick={onBack}
-            className="p-2 rounded-lg bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#e5e5e5] transition-colors cursor-pointer"
-            title="Return to My Tasks"
+            className="p-2.5 rounded-xl bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#e5e5e5] transition-colors cursor-pointer"
+            title="Return to My Khatas"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -296,7 +296,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
               <button
                 id="rename-task-quick-btn"
                 onClick={onRenameTask}
-                title="Rename Task"
+                title="Rename Khata"
                 className="text-[#737373] hover:text-[#e5e5e5] p-1 rounded-lg hover:bg-[#1f1f1f] transition-colors"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -305,15 +305,15 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
             <div className="flex items-center space-x-3 text-xs text-[#737373] mt-0.5">
               <span className="flex items-center space-x-1">
                 <Lock className="w-3 h-3 text-amber-500/80" />
-                <span>Protected</span>
+                <span>{task.is_protected ? 'Protected' : 'Open Khata'}</span>
               </span>
               <span>•</span>
               {/* Auto Save Status Badge */}
-              <span id="autosave-status-badge" className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded text-[10px] font-medium bg-[#171717] border border-emerald-900/30">
+              <span id="autosave-status-badge" className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#171717] border border-emerald-900/40">
                 {saveStatus === 'saved' && (
                   <>
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span className="font-semibold text-emerald-400">SYNCED</span>
+                    <span className="font-semibold text-emerald-400">SAVED</span>
                   </>
                 )}
                 {saveStatus === 'saving' && (
@@ -335,14 +335,14 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center flex-wrap gap-2">
-          {/* Lock Task Button */}
+          {/* Lock Khata Button */}
           <button
             id="lock-task-btn"
             onClick={onLockTask}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#a3a3a3] hover:text-[#e5e5e5] transition-colors cursor-pointer"
+            className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#a3a3a3] hover:text-[#e5e5e5] transition-colors cursor-pointer"
           >
             <Lock className="w-3.5 h-3.5 text-amber-500/80" />
-            <span>Lock Task</span>
+            <span>Lock Khata</span>
           </button>
 
           {/* Export Dropdown */}
@@ -353,7 +353,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                 setShowExportDropdown(!showExportDropdown);
                 setShowSettingsDropdown(false);
               }}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#e5e5e5] transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#e5e5e5] transition-colors cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 text-[#a3a3a3]" />
               <span>Export</span>
@@ -362,7 +362,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
             {showExportDropdown && (
               <div
                 id="export-menu"
-                className="absolute right-0 top-10 z-20 w-44 bg-[#171717] rounded-xl shadow-2xl border border-[#262626] py-1.5 animate-in fade-in zoom-in-95 duration-100"
+                className="absolute right-0 top-11 z-20 w-48 bg-[#171717] rounded-2xl shadow-2xl border border-[#262626] py-1.5 animate-in fade-in zoom-in-95 duration-100"
                 onMouseLeave={() => setShowExportDropdown(false)}
               >
                 <button
@@ -371,10 +371,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     setShowExportDropdown(false);
                     exportToPDF(task.task_name, records, currency.symbol, grandTotal);
                   }}
-                  className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
+                  className="w-full px-4 py-2.5 text-left text-xs font-semibold text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <FileText className="w-4 h-4 text-rose-400" />
-                  <span>Export PDF</span>
+                  <span>Export PDF Statement</span>
                 </button>
                 <button
                   id="export-csv-btn"
@@ -382,10 +382,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     setShowExportDropdown(false);
                     exportToCSV(task.task_name, records, currency.symbol);
                   }}
-                  className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
+                  className="w-full px-4 py-2.5 text-left text-xs font-semibold text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <Download className="w-4 h-4 text-emerald-400" />
-                  <span>Export CSV</span>
+                  <span>Export Excel / CSV</span>
                 </button>
                 <button
                   id="print-ledger-btn"
@@ -393,10 +393,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     setShowExportDropdown(false);
                     handlePrint();
                   }}
-                  className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
+                  className="w-full px-4 py-2.5 text-left text-xs font-semibold text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <Printer className="w-4 h-4 text-sky-400" />
-                  <span>Print Statement</span>
+                  <span>Print Khata</span>
                 </button>
               </div>
             )}
@@ -410,8 +410,8 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                 setShowSettingsDropdown(!showSettingsDropdown);
                 setShowExportDropdown(false);
               }}
-              className="p-1.5 rounded-lg bg-[#171717] hover:bg-[#222] text-[#a3a3a3] hover:text-[#e5e5e5] border border-[#262626] transition-colors"
-              title="Task Settings"
+              className="p-2 rounded-xl bg-[#171717] hover:bg-[#222] text-[#a3a3a3] hover:text-[#e5e5e5] border border-[#262626] transition-colors"
+              title="Khata Settings"
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -419,7 +419,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
             {showSettingsDropdown && (
               <div
                 id="settings-menu"
-                className="absolute right-0 top-10 z-20 w-48 bg-[#171717] rounded-xl shadow-2xl border border-[#262626] py-1.5 animate-in fade-in zoom-in-95 duration-100"
+                className="absolute right-0 top-11 z-20 w-48 bg-[#171717] rounded-2xl shadow-2xl border border-[#262626] py-1.5 animate-in fade-in zoom-in-95 duration-100"
                 onMouseLeave={() => setShowSettingsDropdown(false)}
               >
                 <button
@@ -428,10 +428,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     setShowSettingsDropdown(false);
                     onRenameTask();
                   }}
-                  className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
+                  className="w-full px-4 py-2.5 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <Edit3 className="w-4 h-4 text-[#737373]" />
-                  <span>Rename Task</span>
+                  <span>Rename Khata</span>
                 </button>
                 <button
                   id="settings-change-password-btn"
@@ -439,7 +439,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     setShowSettingsDropdown(false);
                     onChangePassword();
                   }}
-                  className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
+                  className="w-full px-4 py-2.5 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <KeyRound className="w-4 h-4 text-[#737373]" />
                   <span>Change Password</span>
@@ -450,10 +450,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     setShowSettingsDropdown(false);
                     onDuplicateTask();
                   }}
-                  className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
+                  className="w-full px-4 py-2.5 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <Copy className="w-4 h-4 text-[#737373]" />
-                  <span>Duplicate Task</span>
+                  <span>Duplicate Khata</span>
                 </button>
                 <div className="my-1 border-t border-[#262626]" />
                 <button
@@ -462,23 +462,23 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                     setShowSettingsDropdown(false);
                     onDeleteTask();
                   }}
-                  className="w-full px-3.5 py-2 text-left text-xs font-medium text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2"
+                  className="w-full px-4 py-2.5 text-left text-xs font-medium text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2"
                 >
                   <Trash2 className="w-4 h-4 text-rose-500" />
-                  <span>Delete Task</span>
+                  <span>Delete Khata</span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* Primary + Add Row Button */}
+          {/* Primary + Add Entry Button */}
           <button
             id="add-row-primary-btn"
             onClick={() => handleAddRow()}
-            className="flex items-center space-x-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/40 transition-all active:scale-95 cursor-pointer"
+            className="flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/50 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>+ Add Row</span>
+            <span>+ Add Entry</span>
           </button>
         </div>
       </div>
@@ -809,10 +809,10 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
             <button
               type="button"
               onClick={() => handleAddRow()}
-              className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center justify-center space-x-2"
+              className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center space-x-2 shadow-lg shadow-emerald-950/40 cursor-pointer"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
-              <span>+ Add Row</span>
+              <span>+ Add Entry</span>
             </button>
           </div>
         )

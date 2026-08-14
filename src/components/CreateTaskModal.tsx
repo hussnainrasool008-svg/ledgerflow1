@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, Eye, EyeOff, ShieldCheck, PlusCircle, Sparkles } from 'lucide-react';
+import { X, Lock, Eye, EyeOff, ShieldCheck, PlusCircle, Sparkles, BookOpen } from 'lucide-react';
 
 interface CreateTaskModalProps {
   isOpen: boolean;
@@ -9,11 +9,11 @@ interface CreateTaskModalProps {
 
 const EXAMPLE_SUGGESTIONS = [
   'September Sales',
-  'August Customer Records',
-  'Supplier Payments',
+  'Ali Traders Khata',
   'Daily Purchases',
-  'Ali Traders Records',
-  '2026 Sales Ledger',
+  'Supplier Payments',
+  'August Customer Ledger',
+  'Shop Inventory Sales',
 ];
 
 export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
@@ -37,21 +37,16 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
     const trimmedName = taskName.trim();
     if (!trimmedName) {
-      setError('Task Name is required.');
+      setError('Khata Name is required.');
       return;
     }
 
-    if (!password) {
-      setError('Password is required to protect this task.');
-      return;
-    }
-
-    if (password.length < 3) {
+    if (password && password.length < 3) {
       setError('Password must be at least 3 characters long.');
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (password && password !== confirmPassword) {
       setError('Passwords do not match. Please verify.');
       return;
     }
@@ -66,7 +61,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       setError('');
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Failed to create task. Please try again.');
+      setError(err.message || 'Failed to create khata. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -82,14 +77,14 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         <div className="px-6 py-5 border-b border-[#262626] flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-900/40 text-emerald-400 flex items-center justify-center">
-              <PlusCircle className="w-5 h-5" />
+              <BookOpen className="w-5 h-5" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-white">
-                Create New Task
+                Create New Khata
               </h2>
               <p className="text-xs text-[#737373]">
-                Name your ledger & set a private password
+                Name your digital khata &amp; set an optional private password
               </p>
             </div>
           </div>
@@ -113,13 +108,13 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
           )}
 
-          {/* Task Name */}
+          {/* Khata Name */}
           <div>
             <label
               htmlFor="task-name-input"
               className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
             >
-              Task Name <span className="text-emerald-500">*</span>
+              Khata Name <span className="text-emerald-500">*</span>
             </label>
             <input
               id="task-name-input"
@@ -128,13 +123,13 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               autoFocus
               value={taskName}
               onChange={(e) => setTaskName(e.target.value)}
-              placeholder="e.g. September Sales"
+              placeholder="e.g. September Sales, Ali Traders Khata"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] transition-colors"
             />
             {/* Quick Suggestions Chips */}
             <div className="mt-2 flex flex-wrap gap-1.5">
               <span className="text-[11px] text-[#737373] py-0.5 flex items-center mr-1">
-                <Sparkles className="w-3 h-3 mr-1 text-emerald-400" /> Quick names:
+                <Sparkles className="w-3 h-3 mr-1 text-emerald-400" /> Suggestions:
               </span>
               {EXAMPLE_SUGGESTIONS.slice(0, 3).map((sugg) => (
                 <button
@@ -149,69 +144,77 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
           </div>
 
-          {/* Password */}
+          {/* Khata Password (Optional) */}
           <div>
-            <label
-              htmlFor="task-password-input"
-              className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
-            >
-              Password <span className="text-emerald-500">*</span>
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label
+                htmlFor="task-password-input"
+                className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider"
+              >
+                Khata Password <span className="text-[#737373] font-normal normal-case">(Optional)</span>
+              </label>
+            </div>
             <div className="relative">
               <input
                 id="task-password-input"
                 type={showPassword ? 'text' : 'password'}
-                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password for this task"
+                placeholder="Leave blank for open khata, or set private password"
                 autoComplete="new-password"
                 className="w-full pl-3.5 pr-10 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] font-mono transition-colors"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-[#e5e5e5]"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+              {password && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-[#e5e5e5]"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              )}
             </div>
+            <p className="text-[11px] text-[#737373] mt-1">
+              Add a password if this khata contains private business information.
+            </p>
           </div>
 
-          {/* Confirm Password */}
-          <div>
-            <label
-              htmlFor="task-confirm-password-input"
-              className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
-            >
-              Confirm Password <span className="text-emerald-500">*</span>
-            </label>
-            <div className="relative">
-              <input
-                id="task-confirm-password-input"
-                type={showConfirmPassword ? 'text' : 'password'}
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter password to confirm"
-                autoComplete="new-password"
-                className="w-full pl-3.5 pr-10 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] font-mono transition-colors"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-[#e5e5e5]"
+          {/* Confirm Password (only shown if password is typed) */}
+          {password.length > 0 && (
+            <div>
+              <label
+                htmlFor="task-confirm-password-input"
+                className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
               >
-                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+                Confirm Password <span className="text-emerald-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  id="task-confirm-password-input"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter password to confirm"
+                  autoComplete="new-password"
+                  className="w-full pl-3.5 pr-10 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] font-mono transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#737373] hover:text-[#e5e5e5]"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Security Notice */}
           <div className="p-3.5 rounded-xl bg-[#141414] border border-emerald-900/30 flex items-start space-x-2.5 text-xs text-[#a3a3a3]">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong className="text-emerald-400">Private &amp; Secure:</strong> Passwords are protected via one-way cryptographic hashing (PBKDF2/SHA-512) and are never stored in plain text.
+              <strong className="text-emerald-400">Private &amp; Secure:</strong> Passwords are cryptographically salted and hashed. Records remain isolated on your personal digital device.
             </p>
           </div>
 
@@ -232,7 +235,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               disabled={loading}
               className="px-5 py-2.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/40 transition-all disabled:opacity-50 cursor-pointer"
             >
-              {loading ? 'Creating...' : 'Continue / Create Task'}
+              {loading ? 'Creating...' : 'Create Khata'}
             </button>
           </div>
         </form>
