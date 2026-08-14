@@ -112,19 +112,19 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
   const totalRemainingValue = tasks.reduce((sum, t) => sum + (t.total_remaining || 0), 0);
 
   return (
-    <div id="khata-dashboard-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-[#e5e5e5]">
+    <div id="tasks-dashboard-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-[#e5e5e5]">
       {/* Top Banner / Hero */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#0d0d0d] border border-[#262626] rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
         <div className="relative z-10">
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/60 text-xs font-semibold text-emerald-400 mb-3">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Digital Khata • Private Business Ledger</span>
+            <span>Digital Business Tasks &amp; Ledgers</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-            Your Business, Organized Digitally.
+            Your Business Tasks, Organized Digitally.
           </h1>
           <p className="text-xs sm:text-sm text-[#888] mt-1.5 max-w-xl leading-relaxed">
-            Manage customer accounts, sales, payments, and outstanding balances in one secure, modern digital khata.
+            Manage customer accounts, sales, payments, and outstanding balances across your business task spreadsheets.
           </p>
         </div>
 
@@ -141,12 +141,12 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
           )}
 
           <button
-            id="create-khata-primary-btn"
+            id="create-task-primary-btn"
             onClick={onOpenCreateModal}
             className="flex items-center space-x-2 px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl shadow-emerald-950/50 transition-all duration-150 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            <span>+ Create New Khata</span>
+            <span>+ Create New Task</span>
           </button>
         </div>
       </div>
@@ -164,7 +164,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
                 {formatCurrency(totalLedgerValue, currency.symbol)}
               </p>
               <p className="text-[11px] text-[#737373] mt-0.5">
-                Across {totalTasks} {totalTasks === 1 ? 'Khata' : 'Khatas'}
+                Across {totalTasks} {totalTasks === 1 ? 'Task' : 'Tasks'}
               </p>
             </div>
             <div className="w-11 h-11 rounded-xl bg-[#171717] border border-[#262626] flex items-center justify-center text-[#737373]">
@@ -181,9 +181,11 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
               <p id="dashboard-total-paid" className="text-xl sm:text-2xl font-bold text-emerald-400 tabular-nums">
                 {formatCurrency(totalPaidValue, currency.symbol)}
               </p>
-              <p className="text-[11px] text-emerald-400/80 mt-0.5">
-                {totalLedgerValue > 0 ? `${Math.round((totalPaidValue / totalLedgerValue) * 100)}% collected` : '0% collected'}
-              </p>
+              <div className="flex items-center space-x-1.5 mt-0.5">
+                <span className="text-[11px] text-emerald-400/80">
+                  {totalLedgerValue > 0 ? `${Math.round((totalPaidValue / totalLedgerValue) * 100)}% collected` : '0% collected'}
+                </span>
+              </div>
             </div>
             <div className="w-11 h-11 rounded-xl bg-emerald-950/40 border border-emerald-900/50 flex items-center justify-center text-emerald-400">
               <CheckCircle2 className="w-5 h-5" />
@@ -200,7 +202,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
                 {formatCurrency(totalRemainingValue, currency.symbol)}
               </p>
               <p className="text-[11px] text-rose-400/80 mt-0.5">
-                {totalRemainingValue > 0 ? 'Pending recovery' : 'All khatas settled'}
+                {totalRemainingValue > 0 ? 'Pending recovery' : 'All accounts settled'}
               </p>
             </div>
             <div className="w-11 h-11 rounded-xl bg-rose-950/40 border border-rose-900/50 flex items-center justify-center text-rose-400">
@@ -208,17 +210,17 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
             </div>
           </div>
 
-          {/* Total Khata Entries */}
+          {/* Total Task Records */}
           <div className="p-5 rounded-2xl bg-[#111111] border border-[#262626] shadow-sm flex items-center justify-between">
             <div>
               <p className="text-[10px] text-[#737373] uppercase tracking-wider mb-1 font-semibold">
-                Total Khata Entries
+                Total Task Records
               </p>
               <p className="text-xl sm:text-2xl font-bold text-[#e5e5e5]">
                 {totalRecords}
               </p>
               <p className="text-[11px] text-[#737373] mt-0.5">
-                In {totalTasks} digital ledgers
+                In {totalTasks} {totalTasks === 1 ? 'task spreadsheet' : 'task spreadsheets'}
               </p>
             </div>
             <div className="w-11 h-11 rounded-xl bg-[#171717] border border-[#262626] flex items-center justify-center text-[#737373]">
@@ -232,7 +234,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
         <div className="flex items-center space-x-2">
           <h2 className="text-lg font-bold text-white tracking-tight flex items-center space-x-2">
-            <span>My Khatas</span>
+            <span>My Tasks</span>
           </h2>
           <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#171717] border border-[#262626] text-emerald-400">
             {tasks.length}
@@ -248,7 +250,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search khatas..."
+              placeholder="Search tasks..."
               className="w-full pl-8 pr-3.5 py-2 text-xs rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] placeholder-[#525252] focus:outline-none focus:border-emerald-600 transition-colors"
             />
           </div>
@@ -258,15 +260,15 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
             <ArrowUpDown className="w-3.5 h-3.5 text-[#737373] absolute left-2.5 pointer-events-none" />
             <select
               id="sort-tasks-select"
-              aria-label="Sort khatas by"
+              aria-label="Sort tasks by"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as TaskSortOption)}
               className="pl-7 pr-3 py-2 text-xs font-medium bg-[#171717] hover:bg-[#222] text-[#a3a3a3] hover:text-[#e5e5e5] rounded-xl border border-[#262626] focus:outline-none focus:border-emerald-600 cursor-pointer transition-colors"
             >
               <option value="updated_desc" className="bg-[#171717] text-[#e5e5e5]">Recently Updated</option>
               <option value="updated_asc" className="bg-[#171717] text-[#e5e5e5]">Oldest Updated</option>
-              <option value="name_asc" className="bg-[#171717] text-[#e5e5e5]">Khata Name (A-Z)</option>
-              <option value="name_desc" className="bg-[#171717] text-[#e5e5e5]">Khata Name (Z-A)</option>
+              <option value="name_asc" className="bg-[#171717] text-[#e5e5e5]">Task Name (A-Z)</option>
+              <option value="name_desc" className="bg-[#171717] text-[#e5e5e5]">Task Name (Z-A)</option>
               <option value="total_desc" className="bg-[#171717] text-[#e5e5e5]">Highest Sales</option>
               <option value="records_desc" className="bg-[#171717] text-[#e5e5e5]">Most Entries</option>
             </select>
@@ -274,7 +276,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
         </div>
       </div>
 
-      {/* Khata Cards Grid */}
+      {/* Task Cards Grid */}
       {filteredTasks.length > 0 ? (
         <div id="tasks-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredTasks.map((task) => {
@@ -323,7 +325,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
                     >
                       <button
                         id={`task-menu-btn-${task.id}`}
-                        aria-label="Khata options menu"
+                        aria-label="Task options menu"
                         onClick={() =>
                           setActiveMenuTaskId(activeMenuTaskId === task.id ? null : task.id)
                         }
@@ -346,7 +348,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
                             className="w-full px-3.5 py-2 text-left text-xs font-semibold text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                           >
                             <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
-                            <span>Open Khata</span>
+                            <span>Open Task</span>
                           </button>
                           <button
                             onClick={() => {
@@ -356,7 +358,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
                             className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                           >
                             <Edit2 className="w-3.5 h-3.5 text-[#737373]" />
-                            <span>Rename Khata</span>
+                            <span>Rename Task</span>
                           </button>
                           <button
                             onClick={() => {
@@ -376,7 +378,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
                             className="w-full px-3.5 py-2 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                           >
                             <Copy className="w-3.5 h-3.5 text-[#737373]" />
-                            <span>Duplicate Khata</span>
+                            <span>Duplicate Task</span>
                           </button>
                           <button
                             onClick={() => {
@@ -397,14 +399,14 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
                             className="w-full px-3.5 py-2 text-left text-xs font-medium text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-rose-500" />
-                            <span>Delete Khata</span>
+                            <span>Delete Task</span>
                           </button>
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Khata Name */}
+                  {/* Task Name */}
                   <h3 className="text-base font-bold text-[#e5e5e5] group-hover:text-emerald-400 transition-colors line-clamp-1">
                     {task.task_name}
                   </h3>
@@ -454,7 +456,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
         <div className="text-center py-16 bg-[#0d0d0d] rounded-2xl border border-[#262626] p-8">
           <Search className="w-8 h-8 text-[#525252] mx-auto mb-3" />
           <h3 className="text-sm font-semibold text-[#e5e5e5]">
-            No matching khatas found
+            No matching tasks found
           </h3>
           <p className="text-xs text-[#737373] mt-1">
             Try adjusting your search terms or filter criteria.
@@ -476,10 +478,10 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
             <BookOpen className="w-8 h-8" />
           </div>
           <h3 className="text-xl font-bold text-white">
-            No Khatas Yet
+            No Tasks Yet
           </h3>
           <p className="text-xs sm:text-sm text-[#737373] mt-1.5 max-w-sm mx-auto leading-relaxed">
-            Create your first digital khata and start organizing customer accounts, sales, and payments.
+            Create your first task spreadsheet and start organizing customer accounts, sales, and payments.
           </p>
           <button
             id="empty-state-create-btn"
@@ -487,7 +489,7 @@ export const TaskDashboard: React.FC<TaskDashboardProps> = ({
             className="mt-6 inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl shadow-emerald-950/50 transition-all transform hover:-translate-y-0.5 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            <span>+ Create New Khata</span>
+            <span>+ Create New Task</span>
           </button>
         </div>
       )}

@@ -313,6 +313,7 @@ export const firestoreService = {
       const grandTotal = Number(data.total_amount ?? data.grand_total ?? 0);
       const totalPaid = Number(data.total_paid ?? 0);
       const totalRemaining = Number(data.total_remaining ?? Math.max(0, grandTotal - totalPaid));
+      const isProtected = Boolean(data.is_password_protected && data.password_hash);
 
       return {
         id: data.id || d.id,
@@ -322,12 +323,11 @@ export const firestoreService = {
         total_paid: totalPaid,
         total_remaining: totalRemaining,
         paid_count: Number(data.paid_count ?? 0),
-        partial_count: Number(data.partial_count ?? 0),
         unpaid_count: Number(data.unpaid_count ?? 0),
         created_at: data.created_at,
         updated_at: data.updated_at,
         last_opened_at: data.last_opened_at || data.updated_at,
-        is_protected: data.is_password_protected ?? true,
+        is_protected: isProtected,
         password_hash: data.password_hash,
         password_salt: data.password_salt,
         password_version: data.password_version,
@@ -337,6 +337,40 @@ export const firestoreService = {
 
     // Sort by updated_at descending
     return list.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+  },
+
+  /**
+   * Fetches a single task summary by ID from Firestore.
+   */
+  async getTask(installationId: string, taskId: string): Promise<TaskSummary | null> {
+    const taskRef = doc(db, 'users', installationId, 'tasks', taskId);
+    const snap = await getDoc(taskRef);
+    if (!snap.exists()) return null;
+
+    const data = snap.data();
+    const grandTotal = Number(data.total_amount ?? data.grand_total ?? 0);
+    const totalPaid = Number(data.total_paid ?? 0);
+    const totalRemaining = Number(data.total_remaining ?? Math.max(0, grandTotal - totalPaid));
+    const isProtected = Boolean(data.is_password_protected && data.password_hash);
+
+    return {
+      id: data.id || snap.id,
+      task_name: data.task_name,
+      record_count: data.total_records ?? data.record_count ?? 0,
+      grand_total: grandTotal,
+      total_paid: totalPaid,
+      total_remaining: totalRemaining,
+      paid_count: Number(data.paid_count ?? 0),
+      unpaid_count: Number(data.unpaid_count ?? 0),
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      last_opened_at: data.last_opened_at || data.updated_at,
+      is_protected: isProtected,
+      password_hash: data.password_hash,
+      password_salt: data.password_salt,
+      password_version: data.password_version,
+      anonymous_installation_id: installationId,
+    };
   },
 
   /**

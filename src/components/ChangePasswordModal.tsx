@@ -82,7 +82,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             </div>
             <div>
               <h2 className="text-base font-bold text-white">
-                Change Khata Password
+                Change Task Password
               </h2>
               <p className="text-xs text-[#737373]">
                 Update security password for <span className="font-semibold text-[#a3a3a3]">"{task.task_name}"</span>

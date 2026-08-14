@@ -81,13 +81,34 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
   // Sync initial records if prop updates
   useEffect(() => {
     setRecords(initialRecords);
+    latestRecordsRef.current = initialRecords;
   }, [initialRecords]);
 
-  // Debounced Auto-Save
+  // Keep a ref to the latest records to prevent losing data during unmounting or instant navigation
+  const latestRecordsRef = useRef<TaskRecord[]>(initialRecords);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Flush any pending unsaved records to Firestore
+  const flushSave = useCallback(async (customRecords?: TaskRecord[]) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+    const toSave = customRecords || latestRecordsRef.current;
+    setSaveStatus('saving');
+    try {
+      await onSaveRecords(toSave);
+      setSaveStatus('saved');
+    } catch (err) {
+      console.error('Auto-save error to Firestore:', err);
+      setSaveStatus('error');
+      throw err;
+    }
+  }, [onSaveRecords]);
 
   const triggerAutoSave = useCallback(
     (updatedRecords: TaskRecord[]) => {
+      latestRecordsRef.current = updatedRecords;
       setSaveStatus('saving');
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
@@ -100,10 +121,60 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
           console.error('Auto-save error:', err);
           setSaveStatus('error');
         }
-      }, 500);
+      }, 400);
     },
     [onSaveRecords]
   );
+
+  // Safe Back button handler that guarantees all entered rows are flushed to Firestore first
+  const handleBackSafe = async () => {
+    try {
+      await flushSave();
+    } catch (err) {
+      console.error('Failed to flush save before exiting:', err);
+    }
+    onBack();
+  };
+
+  // Safe Lock Task handler
+  const handleLockSafe = async () => {
+    try {
+      await flushSave();
+    } catch (err) {
+      console.error('Failed to flush save before locking:', err);
+    }
+    onLockTask();
+  };
+
+  // Safe Rename Task handler
+  const handleRenameSafe = async () => {
+    try {
+      await flushSave();
+    } catch (err) {
+      // ignore
+    }
+    onRenameTask();
+  };
+
+  // Safe Change Password handler
+  const handleChangePassSafe = async () => {
+    try {
+      await flushSave();
+    } catch (err) {
+      // ignore
+    }
+    onChangePassword();
+  };
+
+  // Safe Duplicate Task handler
+  const handleDuplicateSafe = async () => {
+    try {
+      await flushSave();
+    } catch (err) {
+      // ignore
+    }
+    onDuplicateTask();
+  };
 
   // Add Row
   const handleAddRow = (prefillCustomer = '') => {
@@ -277,13 +348,13 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
     <div id="ledger-view-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 text-[#e5e5e5]">
       {/* Top Navigation & Status Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#262626]">
-        {/* Back Button & Khata Title */}
+        {/* Back Button & Task Title */}
         <div className="flex items-center space-x-3">
           <button
             id="back-to-dashboard-btn"
-            onClick={onBack}
+            onClick={handleBackSafe}
             className="p-2.5 rounded-xl bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#e5e5e5] transition-colors cursor-pointer"
-            title="Return to My Khatas"
+            title="Return to My Tasks"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -295,9 +366,9 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
               </h1>
               <button
                 id="rename-task-quick-btn"
-                onClick={onRenameTask}
-                title="Rename Khata"
-                className="text-[#737373] hover:text-[#e5e5e5] p-1 rounded-lg hover:bg-[#1f1f1f] transition-colors"
+                onClick={handleRenameSafe}
+                title="Rename Task"
+                className="text-[#737373] hover:text-[#e5e5e5] p-1.5 rounded-lg hover:bg-[#1f1f1f] transition-colors"
               >
                 <Edit3 className="w-3.5 h-3.5" />
               </button>
@@ -305,15 +376,21 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
             <div className="flex items-center space-x-3 text-xs text-[#737373] mt-0.5">
               <span className="flex items-center space-x-1">
                 <Lock className="w-3 h-3 text-amber-500/80" />
-                <span>{task.is_protected ? 'Protected' : 'Open Khata'}</span>
+                <span>{task.is_protected ? 'Protected' : 'Open Task'}</span>
               </span>
               <span>•</span>
-              {/* Auto Save Status Badge */}
-              <span id="autosave-status-badge" className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#171717] border border-emerald-900/40">
+              {/* Auto Save Status Badge & Manual Save */}
+              <button
+                type="button"
+                id="manual-save-status-btn"
+                onClick={() => flushSave()}
+                title="Click to manually save changes to Firestore"
+                className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#171717] hover:bg-[#222] border border-emerald-900/40 cursor-pointer transition-colors"
+              >
                 {saveStatus === 'saved' && (
                   <>
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span className="font-semibold text-emerald-400">SAVED</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                    <span className="font-semibold text-emerald-400">SAVED TO CLOUD</span>
                   </>
                 )}
                 {saveStatus === 'saving' && (
@@ -325,24 +402,24 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                 {saveStatus === 'error' && (
                   <>
                     <AlertCircle className="w-3 h-3 text-rose-400" />
-                    <span className="font-semibold text-rose-400">SAVE ERROR</span>
+                    <span className="font-semibold text-rose-400">SAVE FAILED (RETRY)</span>
                   </>
                 )}
-              </span>
+              </button>
             </div>
           </div>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center flex-wrap gap-2">
-          {/* Lock Khata Button */}
+          {/* Lock Task Button */}
           <button
             id="lock-task-btn"
-            onClick={onLockTask}
+            onClick={handleLockSafe}
             className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-[#171717] hover:bg-[#222] border border-[#262626] text-[#a3a3a3] hover:text-[#e5e5e5] transition-colors cursor-pointer"
           >
             <Lock className="w-3.5 h-3.5 text-amber-500/80" />
-            <span>Lock Khata</span>
+            <span>Lock Task</span>
           </button>
 
           {/* Export Dropdown */}
@@ -396,7 +473,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                   className="w-full px-4 py-2.5 text-left text-xs font-semibold text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <Printer className="w-4 h-4 text-sky-400" />
-                  <span>Print Khata</span>
+                  <span>Print Task Ledger</span>
                 </button>
               </div>
             )}
@@ -411,7 +488,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                 setShowExportDropdown(false);
               }}
               className="p-2 rounded-xl bg-[#171717] hover:bg-[#222] text-[#a3a3a3] hover:text-[#e5e5e5] border border-[#262626] transition-colors"
-              title="Khata Settings"
+              title="Task Settings"
             >
               <Settings className="w-4 h-4" />
             </button>
@@ -426,18 +503,18 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                   id="settings-rename-btn"
                   onClick={() => {
                     setShowSettingsDropdown(false);
-                    onRenameTask();
+                    handleRenameSafe();
                   }}
                   className="w-full px-4 py-2.5 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <Edit3 className="w-4 h-4 text-[#737373]" />
-                  <span>Rename Khata</span>
+                  <span>Rename Task</span>
                 </button>
                 <button
                   id="settings-change-password-btn"
                   onClick={() => {
                     setShowSettingsDropdown(false);
-                    onChangePassword();
+                    handleChangePassSafe();
                   }}
                   className="w-full px-4 py-2.5 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
@@ -448,12 +525,12 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                   id="settings-duplicate-btn"
                   onClick={() => {
                     setShowSettingsDropdown(false);
-                    onDuplicateTask();
+                    handleDuplicateSafe();
                   }}
                   className="w-full px-4 py-2.5 text-left text-xs font-medium text-[#a3a3a3] hover:text-[#e5e5e5] hover:bg-[#222] flex items-center space-x-2"
                 >
                   <Copy className="w-4 h-4 text-[#737373]" />
-                  <span>Duplicate Khata</span>
+                  <span>Duplicate Task</span>
                 </button>
                 <div className="my-1 border-t border-[#262626]" />
                 <button
@@ -465,7 +542,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
                   className="w-full px-4 py-2.5 text-left text-xs font-medium text-rose-400 hover:bg-rose-950/40 flex items-center space-x-2"
                 >
                   <Trash2 className="w-4 h-4 text-rose-500" />
-                  <span>Delete Khata</span>
+                  <span>Delete Task</span>
                 </button>
               </div>
             )}
@@ -599,7 +676,7 @@ export const LedgerView: React.FC<LedgerViewProps> = ({
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>Customer Khata Breakdown ({customerKhatas.length})</span>
+            <span>Customer Account Breakdown ({customerKhatas.length})</span>
           </button>
         </div>
 

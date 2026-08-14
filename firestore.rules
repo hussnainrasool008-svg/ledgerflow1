@@ -2,126 +2,29 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions for validating data types and values
-    function isValidNonEmptyString(str, minLen, maxLen) {
-      return str is string && str.size() >= minLen && str.size() <= maxLen;
+    function isValidInstallationId(userId) {
+      return userId is string && userId.size() >= 4 && userId.size() <= 128;
     }
 
-    function isValidNumber(num, minVal) {
-      return (num is int || num is float) && num >= minVal;
-    }
-
-    // User document (Anonymous Installation Identity & App Lock state)
+    // Anonymous Installation User Documents & Subcollections
     match /users/{userId} {
-      allow read: if isValidNonEmptyString(userId, 6, 128);
-
-      allow create: if isValidNonEmptyString(userId, 6, 128)
-        && request.resource.data.id == userId
-        && request.resource.data.anonymous_installation_id == userId
-        && isValidNonEmptyString(request.resource.data.created_at, 10, 50)
-        && isValidNonEmptyString(request.resource.data.updated_at, 10, 50);
-
-      allow update: if isValidNonEmptyString(userId, 6, 128)
-        && request.resource.data.id == userId
-        && request.resource.data.anonymous_installation_id == userId
-        && isValidNonEmptyString(request.resource.data.updated_at, 10, 50);
-
-      allow delete: if isValidNonEmptyString(userId, 6, 128);
+      allow read, write: if isValidInstallationId(userId);
 
       // Tasks Subcollection
       match /tasks/{taskId} {
-        allow read: if isValidNonEmptyString(userId, 6, 128) && isValidNonEmptyString(taskId, 3, 128);
+        allow read, write: if isValidInstallationId(userId);
 
-        allow create: if isValidNonEmptyString(userId, 6, 128)
-          && isValidNonEmptyString(taskId, 3, 128)
-          && request.resource.data.id == taskId
-          && request.resource.data.anonymous_installation_id == userId
-          && isValidNonEmptyString(request.resource.data.task_name, 1, 200)
-          && request.resource.data.is_password_protected is bool
-          && isValidNonEmptyString(request.resource.data.created_at, 10, 50)
-          && isValidNonEmptyString(request.resource.data.updated_at, 10, 50)
-          && isValidNumber(request.resource.data.total_records, 0)
-          && isValidNumber(request.resource.data.total_amount, 0);
-
-        allow update: if isValidNonEmptyString(userId, 6, 128)
-          && isValidNonEmptyString(taskId, 3, 128)
-          && request.resource.data.id == taskId
-          && request.resource.data.anonymous_installation_id == userId
-          && isValidNonEmptyString(request.resource.data.task_name, 1, 200)
-          && isValidNonEmptyString(request.resource.data.updated_at, 10, 50)
-          && isValidNumber(request.resource.data.total_records, 0)
-          && isValidNumber(request.resource.data.total_amount, 0);
-
-        allow delete: if isValidNonEmptyString(userId, 6, 128) && isValidNonEmptyString(taskId, 3, 128);
-
-        // Records Subcollection (Spreadsheet Rows with Payment Tracking)
+        // Records Subcollection (Task Spreadsheet Rows)
         match /records/{recordId} {
-          allow read: if isValidNonEmptyString(userId, 6, 128)
-            && isValidNonEmptyString(taskId, 3, 128)
-            && isValidNonEmptyString(recordId, 3, 128);
-
-          allow create: if isValidNonEmptyString(userId, 6, 128)
-            && isValidNonEmptyString(taskId, 3, 128)
-            && isValidNonEmptyString(recordId, 3, 128)
-            && request.resource.data.id == recordId
-            && request.resource.data.anonymous_installation_id == userId
-            && isValidNonEmptyString(request.resource.data.customer_name, 0, 200)
-            && isValidNonEmptyString(request.resource.data.item, 0, 200)
-            && isValidNumber(request.resource.data.quantity, 0)
-            && isValidNumber(request.resource.data.price, 0)
-            && isValidNumber(request.resource.data.total, 0)
-            && isValidNonEmptyString(request.resource.data.created_at, 10, 50)
-            && isValidNonEmptyString(request.resource.data.updated_at, 10, 50);
-
-          allow update: if isValidNonEmptyString(userId, 6, 128)
-            && isValidNonEmptyString(taskId, 3, 128)
-            && isValidNonEmptyString(recordId, 3, 128)
-            && request.resource.data.id == recordId
-            && request.resource.data.anonymous_installation_id == userId
-            && isValidNonEmptyString(request.resource.data.customer_name, 0, 200)
-            && isValidNonEmptyString(request.resource.data.item, 0, 200)
-            && isValidNumber(request.resource.data.quantity, 0)
-            && isValidNumber(request.resource.data.price, 0)
-            && isValidNumber(request.resource.data.total, 0)
-            && isValidNonEmptyString(request.resource.data.updated_at, 10, 50);
-
-          allow delete: if isValidNonEmptyString(userId, 6, 128)
-            && isValidNonEmptyString(taskId, 3, 128)
-            && isValidNonEmptyString(recordId, 3, 128);
+          allow read, write: if isValidInstallationId(userId);
         }
       }
 
-      // Notes Subcollection (Dedicated Personal & Business Notepad)
+      // Notes Subcollection (Notepad)
       match /notes/{noteId} {
-        allow read: if isValidNonEmptyString(userId, 6, 128) && isValidNonEmptyString(noteId, 3, 128);
-
-        allow create: if isValidNonEmptyString(userId, 6, 128)
-          && isValidNonEmptyString(noteId, 3, 128)
-          && request.resource.data.id == noteId
-          && request.resource.data.anonymous_installation_id == userId
-          && isValidNonEmptyString(request.resource.data.title, 0, 500)
-          && request.resource.data.content is string
-          && request.resource.data.content.size() <= 100000
-          && request.resource.data.is_pinned is bool
-          && request.resource.data.is_archived is bool
-          && request.resource.data.is_deleted is bool
-          && isValidNonEmptyString(request.resource.data.created_at, 10, 50)
-          && isValidNonEmptyString(request.resource.data.updated_at, 10, 50);
-
-        allow update: if isValidNonEmptyString(userId, 6, 128)
-          && isValidNonEmptyString(noteId, 3, 128)
-          && request.resource.data.id == noteId
-          && request.resource.data.anonymous_installation_id == userId
-          && isValidNonEmptyString(request.resource.data.title, 0, 500)
-          && request.resource.data.content is string
-          && request.resource.data.content.size() <= 100000
-          && request.resource.data.is_pinned is bool
-          && request.resource.data.is_archived is bool
-          && request.resource.data.is_deleted is bool
-          && isValidNonEmptyString(request.resource.data.updated_at, 10, 50);
-
-        allow delete: if isValidNonEmptyString(userId, 6, 128) && isValidNonEmptyString(noteId, 3, 128);
+        allow read, write: if isValidInstallationId(userId);
       }
     }
   }
 }
+

@@ -164,8 +164,11 @@ export const api = {
 
   async getTaskRecords(taskId: string): Promise<{ task: TaskSummary; records: TaskRecord[] }> {
     const installationId = getOrCreateDeviceId();
-    const tasks = await firestoreService.getTasks(installationId);
-    const task = tasks.find((t) => t.id === taskId);
+    let task = await firestoreService.getTask(installationId, taskId);
+    if (!task) {
+      const tasks = await firestoreService.getTasks(installationId);
+      task = tasks.find((t) => t.id === taskId) || null;
+    }
     if (!task) {
       throw new Error('Task not found in Firestore.');
     }

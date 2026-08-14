@@ -75,10 +75,10 @@ export const DuplicateTaskModal: React.FC<DuplicateTaskModalProps> = ({
             </div>
             <div>
               <h2 className="text-base font-bold text-white">
-                Duplicate Khata
+                Duplicate Task
               </h2>
               <p className="text-xs text-[#737373]">
-                Clone entries to a new business khata
+                Clone records to a new business task spreadsheet
               </p>
             </div>
           </div>
@@ -102,7 +102,7 @@ export const DuplicateTaskModal: React.FC<DuplicateTaskModalProps> = ({
               htmlFor="duplicate-name-input"
               className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
             >
-              New Khata Name
+              New Task Name
             </label>
             <input
               id="duplicate-name-input"
@@ -110,7 +110,7 @@ export const DuplicateTaskModal: React.FC<DuplicateTaskModalProps> = ({
               required
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              placeholder="e.g. Ali Traders Khata (Copy)"
+              placeholder="e.g. Ali Traders Task (Copy)"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] transition-colors"
             />
           </div>
@@ -120,7 +120,7 @@ export const DuplicateTaskModal: React.FC<DuplicateTaskModalProps> = ({
               htmlFor="duplicate-password-input"
               className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
             >
-              Khata Password (Optional / New)
+              Task Password (Optional / New)
             </label>
             <div className="relative">
               <input
@@ -128,7 +128,7 @@ export const DuplicateTaskModal: React.FC<DuplicateTaskModalProps> = ({
                 type={showPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter password for duplicate khata (optional)"
+                placeholder="Enter password for duplicate task (optional)"
                 className="w-full pl-3.5 pr-10 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] font-mono transition-colors"
               />
               <button
@@ -183,7 +183,7 @@ export const DuplicateTaskModal: React.FC<DuplicateTaskModalProps> = ({
               disabled={loading}
               className="px-5 py-2.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/40 transition-all disabled:opacity-50 cursor-pointer"
             >
-              {loading ? 'Duplicating...' : 'Duplicate Khata'}
+              {loading ? 'Duplicating...' : 'Duplicate Task'}
             </button>
           </div>
         </form>

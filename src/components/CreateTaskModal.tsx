@@ -9,7 +9,7 @@ interface CreateTaskModalProps {
 
 const EXAMPLE_SUGGESTIONS = [
   'September Sales',
-  'Ali Traders Khata',
+  'Ali Traders Task',
   'Daily Purchases',
   'Supplier Payments',
   'August Customer Ledger',
@@ -37,7 +37,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
 
     const trimmedName = taskName.trim();
     if (!trimmedName) {
-      setError('Khata Name is required.');
+      setError('Task Name is required.');
       return;
     }
 
@@ -61,7 +61,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       setError('');
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Failed to create khata. Please try again.');
+      setError(err.message || 'Failed to create task. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -81,10 +81,10 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
             <div>
               <h2 className="text-lg font-bold text-white">
-                Create New Khata
+                Create New Task
               </h2>
               <p className="text-xs text-[#737373]">
-                Name your digital khata &amp; set an optional private password
+                Name your business task spreadsheet &amp; set an optional password
               </p>
             </div>
           </div>
@@ -108,13 +108,13 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
           )}
 
-          {/* Khata Name */}
+          {/* Task Name */}
           <div>
             <label
               htmlFor="task-name-input"
               className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
             >
-              Khata Name <span className="text-emerald-500">*</span>
+              Task Name <span className="text-emerald-500">*</span>
             </label>
             <input
               id="task-name-input"
@@ -123,7 +123,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               autoFocus
               value={taskName}
               onChange={(e) => setTaskName(e.target.value)}
-              placeholder="e.g. September Sales, Ali Traders Khata"
+              placeholder="e.g. September Sales, Ali Traders Task"
               className="w-full px-3.5 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] transition-colors"
             />
             {/* Quick Suggestions Chips */}
@@ -144,14 +144,14 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             </div>
           </div>
 
-          {/* Khata Password (Optional) */}
+          {/* Task Password (Optional) */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label
                 htmlFor="task-password-input"
                 className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider"
               >
-                Khata Password <span className="text-[#737373] font-normal normal-case">(Optional)</span>
+                Task Password <span className="text-[#737373] font-normal normal-case">(Optional)</span>
               </label>
             </div>
             <div className="relative">
@@ -160,7 +160,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Leave blank for open khata, or set private password"
+                placeholder="Leave blank for open task, or set private password"
                 autoComplete="new-password"
                 className="w-full pl-3.5 pr-10 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 placeholder:text-[#525252] font-mono transition-colors"
               />
@@ -175,7 +175,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               )}
             </div>
             <p className="text-[11px] text-[#737373] mt-1">
-              Add a password if this khata contains private business information.
+              Add a password if this task contains confidential business records.
             </p>
           </div>
 
@@ -214,7 +214,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           <div className="p-3.5 rounded-xl bg-[#141414] border border-emerald-900/30 flex items-start space-x-2.5 text-xs text-[#a3a3a3]">
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong className="text-emerald-400">Private &amp; Secure:</strong> Passwords are cryptographically salted and hashed. Records remain isolated on your personal digital device.
+              <strong className="text-emerald-400">Private &amp; Secure:</strong> Passwords are cryptographically salted and hashed. Records are safely stored in Firebase Firestore.
             </p>
           </div>
 
@@ -235,7 +235,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
               disabled={loading}
               className="px-5 py-2.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/40 transition-all disabled:opacity-50 cursor-pointer"
             >
-              {loading ? 'Creating...' : 'Create Khata'}
+              {loading ? 'Creating...' : 'Create Task'}
             </button>
           </div>
         </form>

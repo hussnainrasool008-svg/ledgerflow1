@@ -59,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <LedgerFlowLogo variant="full" size="md" showTagline />
             <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/60 ml-1">
-              Digital Khata
+              Task Ledger
             </span>
           </div>
 
@@ -76,7 +76,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
-                <span>My Khatas</span>
+                <span>My Tasks</span>
               </button>
 
               <button

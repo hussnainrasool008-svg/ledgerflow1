@@ -276,7 +276,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
             {records.length === 0 && (
               <tr>
                 <td colSpan={11} className="py-12 text-center text-[#737373]">
-                  <p className="text-sm font-medium">No entries in this khata yet.</p>
+                  <p className="text-sm font-medium">No entries in this task spreadsheet yet.</p>
                   <button
                     type="button"
                     onClick={onAddRow}

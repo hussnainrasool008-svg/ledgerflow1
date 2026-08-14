@@ -24,7 +24,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
       className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0d0d0d]/95 backdrop-blur-lg border-t border-[#262626] pb-[env(safe-area-inset-bottom)] transition-all"
     >
       <div className="flex items-center justify-around h-14 px-2">
-        {/* Ledgers / Khatas Tab */}
+        {/* Ledgers / Tasks Tab */}
         <button
           id="mobile-nav-tasks-btn"
           onClick={() => onChangeView('tasks')}
@@ -33,7 +33,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           }`}
         >
           <LayoutDashboard className="w-5 h-5 mb-0.5" />
-          <span className="text-[10px] tracking-tight">Khatas</span>
+          <span className="text-[10px] tracking-tight">Tasks</span>
         </button>
 
         {/* Quick Add Action (center action) */}
@@ -42,7 +42,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
             id="mobile-nav-quick-add-btn"
             onClick={onOpenCreateTask}
             className="flex flex-col items-center justify-center -mt-4 w-11 h-11 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/60 border-2 border-[#0d0d0d] active:scale-95 transition-all cursor-pointer"
-            title="Create New Khata"
+            title="Create New Task"
           >
             <Plus className="w-5 h-5 stroke-[2.5]" />
           </button>

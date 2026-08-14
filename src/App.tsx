@@ -396,7 +396,7 @@ export default function App() {
           <div className="max-w-7xl mx-auto px-4 py-24 flex flex-col items-center justify-center space-y-4">
             <div className="w-10 h-10 border-4 border-[#262626] border-t-emerald-500 rounded-full animate-spin" />
             <p className="text-sm font-medium text-[#737373]">
-              Loading your private business data...
+              Loading your tasks...
             </p>
           </div>
         ) : activeTask ? (

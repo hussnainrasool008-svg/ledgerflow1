@@ -84,13 +84,13 @@ export const UnlockTaskModal: React.FC<UnlockTaskModalProps> = ({
             <Lock className="w-6 h-6" />
           </div>
           <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-[#1c1c1c] text-[11px] font-medium text-[#a3a3a3] mb-1.5 border border-[#262626]">
-            <span>Protected Khata</span>
+            <span>Protected Task</span>
           </div>
           <h2 id="unlock-task-name" className="text-lg font-bold tracking-tight text-white px-2">
             {task.task_name}
           </h2>
           <p className="text-xs text-[#737373] mt-1 max-w-xs mx-auto">
-            This khata is password protected. Enter your password to view entries and balance.
+            This task is password protected. Enter your password to view entries and balance.
           </p>
         </div>
 
@@ -118,7 +118,7 @@ export const UnlockTaskModal: React.FC<UnlockTaskModalProps> = ({
               htmlFor="unlock-password-input"
               className="block text-xs font-semibold text-[#a3a3a3] uppercase tracking-wider mb-1.5"
             >
-              Khata Password
+              Task Password
             </label>
             <div className="relative">
               <input
@@ -129,7 +129,7 @@ export const UnlockTaskModal: React.FC<UnlockTaskModalProps> = ({
                 disabled={cooldownSec !== null && cooldownSec > 0}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter khata password"
+                placeholder="Enter task password"
                 autoComplete="current-password"
                 className="w-full pl-3.5 pr-10 py-2.5 text-sm rounded-xl bg-[#171717] border border-[#262626] text-[#e5e5e5] focus:outline-none focus:border-emerald-500 transition-colors font-mono disabled:opacity-50 placeholder:text-[#525252]"
               />
@@ -164,7 +164,7 @@ export const UnlockTaskModal: React.FC<UnlockTaskModalProps> = ({
               className="flex-1 py-2.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/40 transition-all disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer"
             >
               <KeyRound className="w-4 h-4" />
-              <span>{loading ? 'Verifying...' : 'Unlock Khata'}</span>
+              <span>{loading ? 'Verifying...' : 'Unlock Task'}</span>
             </button>
           </div>
         </form>
